@@ -18,3 +18,9 @@ flat/
 # NPM
 gas-report
 /bin/
+.DS_Store
+cache_forge/
+typechain-types/
+out/
+
+.env
