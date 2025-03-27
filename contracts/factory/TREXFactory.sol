@@ -102,7 +102,7 @@ contract TREXFactory is ITREXFactory, Ownable {
     // solhint-disable-next-line code-complexity, function-max-lines
     function deployTREXSuite(string memory _salt, TokenDetails calldata _tokenDetails, ClaimDetails calldata
         _claimDetails)
-    external override onlyOwner {
+    external override {
         require(tokenDeployed[_salt] == address(0)
         , "token already deployed");
         require((_claimDetails.issuers).length == (_claimDetails.issuerClaims).length
