@@ -8,7 +8,7 @@ import "@onchain-id/solidity/contracts/interface/IIdentity.sol";
 import "@onchain-id/solidity/contracts/Identity.sol";
 import "@onchain-id/solidity/contracts/ClaimIssuer.sol";
 import "@onchain-id/solidity/contracts/proxy/ImplementationAuthority.sol";
-import "@onchain-id/solidity/contracts/factory/IdFactory.sol";
+//import "@onchain-id/solidity/contracts/factory/IdFactory.sol";
 import "@onchain-id/solidity/contracts/proxy/IdentityProxy.sol";
 import "@onchain-id/solidity/contracts/storage/Structs.sol";
 
@@ -31,6 +31,8 @@ import "contracts/proxy/IdentityRegistryStorageProxy.sol";
 import "contracts/proxy/IdentityRegistryProxy.sol";
 import "contracts/proxy/TokenProxy.sol";
 
+import "contracts/factory/IdFactory.sol";
+
 // token 合约 超过大小限制 无法部署 Error: `Token` is above the contract size limit (26700 > 24576).
 // # 修改 foundry.toml
 // optimizer_runs = 4_294_967_295
@@ -50,6 +52,31 @@ contract DeployTokenImpl is Script {
 
         vm.stopBroadcast();
     }
+}
+
+// forge script scripts/testnet/TREXFactoryDeploy.s.sol:DeployIdFactory --rpc-url $RPC_URL --slow --broadcast --retries 10 --delay 30 --verify --verifier=blockscout --verifier-url=https://eth-holesky.blockscout.com/api/
+contract DeployIdFactory is Script {
+
+    IdFactory identityFactory;
+
+    address identityImplementationAuthority = 0xf9D6c5cd2e7B9c463Bdcdf6aE019AA1C69E7e723;
+    TREXImplementationAuthority trexImplementationAuthority = TREXImplementationAuthority(0x53D5FECf18632fce03B93Bd435fA44fF4204dFE5);
+    TREXFactory trexFactory = TREXFactory(0xc4e53CC5625a689938aD10726118db9D2dF84926);
+
+    function run() public {
+        uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY_DEV");
+        vm.startBroadcast(deployerPrivateKey);
+
+        identityFactory = new IdFactory(address(identityImplementationAuthority));
+        console.log("identityFactory:", address(identityFactory));
+
+        trexImplementationAuthority.setIAFactory(address(identityFactory));
+        identityFactory.addTokenFactory(address(trexFactory));
+        trexFactory.setIdFactory(address(identityFactory));
+
+        vm.stopBroadcast();
+    }
+
 }
 
 // forge script scripts/testnet/TREXFactoryDeploy.s.sol:DeployScript --rpc-url $RPC_URL --slow --broadcast --retries 10 --delay 30 --verify
