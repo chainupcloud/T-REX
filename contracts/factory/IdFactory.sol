@@ -62,7 +62,7 @@ contract IdFactory is IIdFactory, Ownable {
     function createIdentity(
         address _wallet,
         string memory _salt)
-    external onlyOwner override returns (address) {
+    external override returns (address) {
         require(_wallet != address(0), "invalid argument - zero address");
         require(keccak256(abi.encode(_salt)) != keccak256(abi.encode("")), "invalid argument - empty string");
         string memory oidSalt = string.concat("OID",_salt);
@@ -83,7 +83,7 @@ contract IdFactory is IIdFactory, Ownable {
         address _wallet,
         string memory _salt,
         bytes32[] memory _managementKeys
-    ) external onlyOwner override returns (address) {
+    ) external override returns (address) {
         require(_wallet != address(0), "invalid argument - zero address");
         require(keccak256(abi.encode(_salt)) != keccak256(abi.encode("")), "invalid argument - empty string");
         string memory oidSalt = string.concat("OID",_salt);
