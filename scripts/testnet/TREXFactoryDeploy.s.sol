@@ -38,6 +38,7 @@ import "contracts/factory/IdFactory.sol";
 // optimizer_runs = 4_294_967_295
 // 部署时指定 profile tokenImpl
 // FOUNDRY_PROFILE=tokenImpl forge script scripts/testnet/TREXFactoryDeploy.s.sol:DeployTokenImpl --rpc-url $RPC_URL --slow --broadcast --retries 10 --delay 30 --verify --verifier=blockscout --verifier-url=https://eth-holesky.blockscout.com/api/
+// FOUNDRY_PROFILE=tokenImpl forge script scripts/testnet/TREXFactoryDeploy.s.sol:DeployTokenImpl --rpc-url $RPC_URL --slow --broadcast --retries 10 --delay 30 --verify --etherscan-api-key MHVDXC3S36YTS89GXQZFB5HBVRCZ82BZTY
 // 这种方式部署 在blockscout没有直接验证成功  需要手动再进行认证
 // forge verify-contract 0xfb3De75b213cf204613b39f6aD1725773Bfc1b72 Token --chain 17000  --watch --verifier=blockscout --verifier-url=https://eth-holesky.blockscout.com/api/
 contract DeployTokenImpl is Script {
@@ -54,14 +55,15 @@ contract DeployTokenImpl is Script {
     }
 }
 
+// forge script scripts/testnet/TREXFactoryDeploy.s.sol:DeployIdFactory --rpc-url $RPC_URL --slow --broadcast --retries 10 --delay 30 --verify
 // forge script scripts/testnet/TREXFactoryDeploy.s.sol:DeployIdFactory --rpc-url $RPC_URL --slow --broadcast --retries 10 --delay 30 --verify --verifier=blockscout --verifier-url=https://eth-holesky.blockscout.com/api/
 contract DeployIdFactory is Script {
 
     IdFactory identityFactory;
 
-    address identityImplementationAuthority = 0xf9D6c5cd2e7B9c463Bdcdf6aE019AA1C69E7e723;
-    TREXImplementationAuthority trexImplementationAuthority = TREXImplementationAuthority(0x53D5FECf18632fce03B93Bd435fA44fF4204dFE5);
-    TREXFactory trexFactory = TREXFactory(0xc4e53CC5625a689938aD10726118db9D2dF84926);
+    address identityImplementationAuthority = 0xe3a194d877182bF631013ecb0e7fED5d700B5a74;
+    TREXImplementationAuthority trexImplementationAuthority = TREXImplementationAuthority(0x07D0a593bD9254b131e48883a10449df82fa925E);
+    TREXFactory trexFactory = TREXFactory(0x04ac81810760E02d9e45E88B4d68e2A7294750F1);
 
     function run() public {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY_DEV");
@@ -79,13 +81,13 @@ contract DeployIdFactory is Script {
 
 }
 
-// forge script scripts/testnet/TREXFactoryDeploy.s.sol:DeployScript --rpc-url $RPC_URL --slow --broadcast --retries 10 --delay 30 --verify
+// forge script scripts/testnet/TREXFactoryDeploy.s.sol:DeployScript --rpc-url $RPC_URL --broadcast --retries 10 --delay 30 --verify --etherscan-api-key MHVDXC3S36YTS89GXQZFB5HBVRCZ82BZTY
 // forge script scripts/testnet/TREXFactoryDeploy.s.sol:DeployScript --rpc-url $RPC_URL --slow --broadcast --retries 10 --delay 30 --verify --verifier=blockscout --verifier-url=https://eth-holesky.blockscout.com/api/
 contract DeployScript is Script {
     address deployer = 0x892e7c8C5E716e17891ABf9395a0de1f2fc84786;
     address AddressZero = address(0);
 
-    Token tokenImplementation = Token(0xfb3De75b213cf204613b39f6aD1725773Bfc1b72);
+    Token tokenImplementation = Token(0x85963a0b9e359E9d83b333E4f504bdcc8F1998f6);
 
     TREXImplementationAuthority trexImplementationAuthority;
     ClaimTopicsRegistry claimTopicsRegistryImplementation;
@@ -171,6 +173,9 @@ contract DeployTokenByFactory is Script {
     address AddressZero = address(0);
 
     // 使用已部署的TokenFactory 实时修改
+    // holesky
+//    TREXFactory trexFactory = TREXFactory(0x154C5e64de46EAe27342D9851Fd819DFC085d286);
+    // sepolia
     TREXFactory trexFactory = TREXFactory(0x154C5e64de46EAe27342D9851Fd819DFC085d286);
     address identityRegistryStorageAddress = 0x0000000000000000000000000000000000000000;
 
@@ -188,7 +193,10 @@ contract DeployTokenByFactory is Script {
         tokenAgents[0] = 0x892e7c8C5E716e17891ABf9395a0de1f2fc84786;
         tokenAgents[1] = 0xe583DC38863aB4b5A94da77A6628e2119eaD4B18;
         address[] memory complianceModules = new address[](1);
-        complianceModules[0] = 0xd9b7d77Be3b2d58f8d2cD39099a7779Fb6C5f4BC;
+        // holesky
+//        complianceModules[0] = 0xd9b7d77Be3b2d58f8d2cD39099a7779Fb6C5f4BC;
+        // sepolia
+        complianceModules[0] = 0xC339C922b5C77052F5a97fB617C510d4d00b325c;
         bytes[] memory complianceSettings = new bytes[](0);
         ITREXFactory.TokenDetails memory _tokenDetails = ITREXFactory.TokenDetails({
             owner: deployer,
