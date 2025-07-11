@@ -22,9 +22,13 @@ contract MintableERC721 is IMintableERC721, ERC721AQueryable, AccessControl, Pau
 
     address public compliance;
 
-    constructor(string memory name, string memory symbol, string memory baseTokenURI_, address admin, address mintBurner)
-        ERC721A(name, symbol)
-    {
+    constructor(
+        string memory name,
+        string memory symbol,
+        string memory baseTokenURI_,
+        address admin,
+        address mintBurner
+    ) ERC721A(name, symbol) {
         _baseTokenURI = baseTokenURI_;
         _grantRole(DEFAULT_ADMIN_ROLE, admin);
         _grantRole(PAUSER_ROLE, admin);
@@ -125,14 +129,11 @@ contract MintableERC721 is IMintableERC721, ERC721AQueryable, AccessControl, Pau
     }
 
     /// @notice Mint the specified token
-    function mintSpot(
-        address to,
-        uint256 tokenId
-    ) external onlyRole(MINTER_ROLE) {
+    function mintSpot(address to, uint256 tokenId) external onlyRole(MINTER_ROLE) {
         if (compliance != address(0) && !IERC721Compliance(compliance).isCompliant(address(0), to, tokenId)) {
             revert NotCompliance();
         }
-         _safeMintSpot(to, tokenId);
+        _safeMintSpot(to, tokenId);
         if (compliance != address(0)) {
             IERC721Compliance(compliance).transferred(address(0), to, tokenId);
         }
@@ -150,11 +151,12 @@ contract MintableERC721 is IMintableERC721, ERC721AQueryable, AccessControl, Pau
     }
 
     /// @notice Transfer the specified token
-    function transferFrom(
-        address from,
-        address to,
-        uint256 tokenId
-    ) public payable virtual override(IERC721A, ERC721A) {
+    function transferFrom(address from, address to, uint256 tokenId)
+        public
+        payable
+        virtual
+        override(IERC721A, ERC721A)
+    {
         if (compliance != address(0) && !IERC721Compliance(compliance).isCompliant(from, to, tokenId)) {
             revert NotCompliance();
         }

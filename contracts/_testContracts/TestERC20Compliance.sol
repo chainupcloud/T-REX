@@ -31,10 +31,10 @@ contract TestERC20Compliance is ICompliance {
     }
 
     function created(address _to, uint256 _amount) external {
-        emit MintCompliance(_to, _to, _amount);
+        emit MintCompliance(_to, address(0), _amount);
     }
 
     function destroyed(address _from, uint256 _amount) external {
-        emit BurnCompliance(_from, _from, _amount);
+        emit BurnCompliance(address(0), _from, _amount);
     }
 }
