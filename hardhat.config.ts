@@ -6,6 +6,7 @@ import 'solidity-coverage';
 import '@nomiclabs/hardhat-solhint';
 import '@primitivefi/hardhat-dodoc';
 import '@nomicfoundation/hardhat-foundry';
+import 'hardhat-gas-reporter';
 
 const config: HardhatUserConfig = {
   solidity: {
@@ -19,11 +20,13 @@ const config: HardhatUserConfig = {
   },
   gasReporter: {
     enabled: true,
+    outputFile: 'gas-report.txt', // 可选：输出到文件
+    noColors: false, // 可选：是否禁用颜色
   },
   dodoc: {
     runOnCompile: false,
     debugMode: true,
-    outputDir: "./docgen",
+    outputDir: './docgen',
     freshOutput: true,
   },
 };
