@@ -33,19 +33,12 @@ import "contracts/proxy/TokenProxy.sol";
 
 import "contracts/factory/IdFactory.sol";
 
-// token 合约 超过大小限制 无法部署 Error: `Token` is above the contract size limit (26700 > 24576).
-// # 修改 foundry.toml
-// optimizer_runs = 4_294_967_295
-// 部署时指定 profile tokenImpl
-// FOUNDRY_PROFILE=tokenImpl forge script scripts/testnet/TREXFactoryDeploy.s.sol:DeployTokenImpl --rpc-url $RPC_URL --slow --broadcast --retries 10 --delay 30 --verify --verifier=blockscout --verifier-url=https://eth-holesky.blockscout.com/api/
-// FOUNDRY_PROFILE=tokenImpl forge script scripts/testnet/TREXFactoryDeploy.s.sol:DeployTokenImpl --rpc-url $RPC_URL --slow --broadcast --retries 10 --delay 30 --verify --etherscan-api-key <key>
-// 这种方式部署 在blockscout没有直接验证成功  需要手动再进行认证
-// forge verify-contract 0xfb3De75b213cf204613b39f6aD1725773Bfc1b72 Token --chain 17000  --watch --verifier=blockscout --verifier-url=https://eth-holesky.blockscout.com/api/
+// FOUNDRY_PROFILE=tokenImpl forge script scripts/mainnet/TREXFactoryDeploy.s.sol:DeployTokenImpl --rpc-url $RPC_URL --broadcast --retries 10 --delay 30 --verify --etherscan-api-key $ETHERSCAN_API_KEY
 contract DeployTokenImpl is Script {
     Token tokenImplementation;
 
     function run() public {
-        uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY_DEV");
+        uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
         vm.startBroadcast(deployerPrivateKey);
 
         tokenImplementation = new Token();
@@ -55,39 +48,13 @@ contract DeployTokenImpl is Script {
     }
 }
 
-// forge script scripts/testnet/TREXFactoryDeploy.s.sol:DeployIdFactory --rpc-url $RPC_URL --slow --broadcast --retries 10 --delay 30 --verify
-// forge script scripts/testnet/TREXFactoryDeploy.s.sol:DeployIdFactory --rpc-url $RPC_URL --slow --broadcast --retries 10 --delay 30 --verify --verifier=blockscout --verifier-url=https://eth-holesky.blockscout.com/api/
-contract DeployIdFactory is Script {
-
-    IdFactory identityFactory;
-
-    address identityImplementationAuthority = 0xE40bE566b1663c46b162B57648a592355e3ba12f;
-    TREXImplementationAuthority trexImplementationAuthority = TREXImplementationAuthority(0xd9028bE5dE26C22fF3e8376C1Bf55268d19586DB);
-    TREXFactory trexFactory = TREXFactory(0xBFE8930fBC66D5f13EB7b768af3145555bD914f9);
-
-    function run() public {
-        uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY_DEV");
-        vm.startBroadcast(deployerPrivateKey);
-
-        identityFactory = new IdFactory(address(identityImplementationAuthority));
-        console.log("identityFactory:", address(identityFactory));
-
-        trexImplementationAuthority.setIAFactory(address(identityFactory));
-        identityFactory.addTokenFactory(address(trexFactory));
-        trexFactory.setIdFactory(address(identityFactory));
-
-        vm.stopBroadcast();
-    }
-
-}
-
-// forge script scripts/testnet/TREXFactoryDeploy.s.sol:DeployScript --rpc-url $RPC_URL --broadcast --retries 10 --delay 30 --verify --etherscan-api-key <key>
-// forge script scripts/testnet/TREXFactoryDeploy.s.sol:DeployScript --rpc-url $RPC_URL --slow --broadcast --retries 10 --delay 30 --verify --verifier=blockscout --verifier-url=https://eth-holesky.blockscout.com/api/
+// forge script scripts/mainnet/TREXFactoryDeploy.s.sol:DeployScript --rpc-url $RPC_URL --broadcast --retries 10 --delay 30 --verify --etherscan-api-key $ETHERSCAN_API_KEY
 contract DeployScript is Script {
-    address deployer = 0x892e7c8C5E716e17891ABf9395a0de1f2fc84786;
     address AddressZero = address(0);
 
-    Token tokenImplementation = Token(0xE75Ac770e91b34577A9C9152FDed05Ab1294d480);
+    // modify
+    address deployer = 0x0000000000000000000000000000000000000000;
+    Token tokenImplementation = Token(0x0000000000000000000000000000000000000000);
 
     TREXImplementationAuthority trexImplementationAuthority;
     ClaimTopicsRegistry claimTopicsRegistryImplementation;
@@ -103,7 +70,7 @@ contract DeployScript is Script {
     TREXFactory trexFactory;
 
     function run() public {
-        uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY_DEV");
+        uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
         vm.startBroadcast(deployerPrivateKey);
 
         // 部署代理的实现合约
@@ -166,60 +133,29 @@ contract DeployScript is Script {
     }
 }
 
-// forge script scripts/testnet/TREXFactoryDeploy.s.sol:DeployTokenByFactory --rpc-url $RPC_URL --slow --broadcast --retries 10 --delay 30 --verify
-// forge script scripts/testnet/TREXFactoryDeploy.s.sol:DeployTokenByFactory --rpc-url $RPC_URL --slow --broadcast --retries 10 --delay 30 --verify --verifier=blockscout --verifier-url=https://eth-holesky.blockscout.com/api/
-contract DeployTokenByFactory is Script {
-    address deployer = 0x892e7c8C5E716e17891ABf9395a0de1f2fc84786;
-    address AddressZero = address(0);
+// forge script scripts/mainnet/TREXFactoryDeploy.s.sol:DeployIdFactory --rpc-url $RPC_URL --slow --broadcast --retries 10 --delay 30 --verify --etherscan-api-key $ETHERSCAN_API_KEY
+contract DeployIdFactory is Script {
 
-    // 使用已部署的TokenFactory 实时修改
-    // holesky
-//    TREXFactory trexFactory = TREXFactory(0x154C5e64de46EAe27342D9851Fd819DFC085d286);
-    // sepolia
-    TREXFactory trexFactory = TREXFactory(0x154C5e64de46EAe27342D9851Fd819DFC085d286);
-    address identityRegistryStorageAddress = 0x0000000000000000000000000000000000000000;
+    IdFactory identityFactory;
+
+    // --- modify -------
+    address identityImplementationAuthority = 0x0000000000000000000000000000000000000000;
+    TREXImplementationAuthority trexImplementationAuthority = TREXImplementationAuthority(0x0000000000000000000000000000000000000000);
+    TREXFactory trexFactory = TREXFactory(0x0000000000000000000000000000000000000000);
+    // ------------------------
 
     function run() public {
-        uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY_DEV");
+        uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
         vm.startBroadcast(deployerPrivateKey);
 
-        // 部署Token 参数定义
-        string memory _salt = "token-uuid-1";
+        identityFactory = new IdFactory(address(identityImplementationAuthority));
+        console.log("identityFactory:", address(identityFactory));
 
-        address[] memory irAgents = new address[](2);
-        irAgents[0] = 0x892e7c8C5E716e17891ABf9395a0de1f2fc84786;
-        irAgents[1] = 0xe583DC38863aB4b5A94da77A6628e2119eaD4B18;
-        address[] memory tokenAgents = new address[](2);
-        tokenAgents[0] = 0x892e7c8C5E716e17891ABf9395a0de1f2fc84786;
-        tokenAgents[1] = 0xe583DC38863aB4b5A94da77A6628e2119eaD4B18;
-        address[] memory complianceModules = new address[](1);
-        // holesky
-//        complianceModules[0] = 0xd9b7d77Be3b2d58f8d2cD39099a7779Fb6C5f4BC;
-        // sepolia
-        complianceModules[0] = 0xC339C922b5C77052F5a97fB617C510d4d00b325c;
-        bytes[] memory complianceSettings = new bytes[](0);
-        ITREXFactory.TokenDetails memory _tokenDetails = ITREXFactory.TokenDetails({
-            owner: deployer,
-            name: "TREX Token",
-            symbol: "TREX",
-            decimals: 18,
-            irs: identityRegistryStorageAddress,
-            ONCHAINID: AddressZero,
-            irAgents: irAgents,
-            tokenAgents: tokenAgents,
-            complianceModules: complianceModules,
-            complianceSettings: complianceSettings
-        });
-
-        ITREXFactory.ClaimDetails memory _claimDetails = ITREXFactory.ClaimDetails({
-            claimTopics: new uint256[](0),
-            issuers: new address[](0),
-            issuerClaims: new uint256[][](0)
-        });
-
-        // auth owner
-        trexFactory.deployTREXSuite(_salt, _tokenDetails, _claimDetails);
+        trexImplementationAuthority.setIAFactory(address(identityFactory));
+        identityFactory.addTokenFactory(address(trexFactory));
+        trexFactory.setIdFactory(address(identityFactory));
 
         vm.stopBroadcast();
     }
+
 }
