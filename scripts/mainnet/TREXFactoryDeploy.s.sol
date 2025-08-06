@@ -133,29 +133,30 @@ contract DeployScript is Script {
     }
 }
 
+// no need
 // forge script scripts/mainnet/TREXFactoryDeploy.s.sol:DeployIdFactory --rpc-url $RPC_URL --slow --broadcast --retries 10 --delay 30 --verify --etherscan-api-key $ETHERSCAN_API_KEY
-contract DeployIdFactory is Script {
-
-    IdFactory identityFactory;
-
-    // --- modify -------
-    address identityImplementationAuthority = 0x0000000000000000000000000000000000000000;
-    TREXImplementationAuthority trexImplementationAuthority = TREXImplementationAuthority(0x0000000000000000000000000000000000000000);
-    TREXFactory trexFactory = TREXFactory(0x0000000000000000000000000000000000000000);
-    // ------------------------
-
-    function run() public {
-        uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
-        vm.startBroadcast(deployerPrivateKey);
-
-        identityFactory = new IdFactory(address(identityImplementationAuthority));
-        console.log("identityFactory:", address(identityFactory));
-
-        trexImplementationAuthority.setIAFactory(address(identityFactory));
-        identityFactory.addTokenFactory(address(trexFactory));
-        trexFactory.setIdFactory(address(identityFactory));
-
-        vm.stopBroadcast();
-    }
-
-}
+//contract DeployIdFactory is Script {
+//
+//    IdFactory identityFactory;
+//
+//    // --- modify -------
+//    address identityImplementationAuthority = 0x0000000000000000000000000000000000000000;
+//    TREXImplementationAuthority trexImplementationAuthority = TREXImplementationAuthority(0x0000000000000000000000000000000000000000);
+//    TREXFactory trexFactory = TREXFactory(0x0000000000000000000000000000000000000000);
+//    // ------------------------
+//
+//    function run() public {
+//        uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
+//        vm.startBroadcast(deployerPrivateKey);
+//
+//        identityFactory = new IdFactory(address(identityImplementationAuthority));
+//        console.log("identityFactory:", address(identityFactory));
+//
+//        trexImplementationAuthority.setIAFactory(address(identityFactory));
+//        identityFactory.addTokenFactory(address(trexFactory));
+//        trexFactory.setIdFactory(address(identityFactory));
+//
+//        vm.stopBroadcast();
+//    }
+//
+//}
